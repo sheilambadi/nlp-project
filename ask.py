@@ -20,7 +20,7 @@ class Ask:
         self.nlp = spacy.load("en_core_web_sm")
 
         # print(self.tokenize())
-        self.sentencize()
+        self.analyze()
 
     def parse_file(self):
         """
@@ -56,23 +56,6 @@ class Ask:
             sentences = list(doc.sents)
             sentence_list.append(sentences)
 
-        for sentence in sentence_list:
-            for line in sentence:
-                line = " ".join([str(l) for l in line])
-
-                doc = self.nlp(line)
-                for token in doc:
-                    print(
-                        token.text,
-                        token.lemma_,
-                        token.pos_,
-                        token.tag_,
-                        token.dep_,
-                        token.shape_,
-                        token.is_alpha,
-                        token.is_stop,
-                    )
-
         return sentence_list
 
     def tokenize(self):
@@ -96,19 +79,37 @@ class Ask:
 
         return tokenized_sentence
 
-    def tag_words(self):
+    def analyze(self):
         """
         Run a part-of-speech tagger on tokens
-        :return: POS tagged words
+        :return: analyzed words
         """
 
-        sentences = self.sentencize()
-        tokens = self.tokenize()
+        sentence_list = self.sentencize()
+        analysis_list = []
 
-        tagged_words = []
+        for paragraph in sentence_list:
+            for sentence in paragraph:
+                sentence = " ".join([str(s) for s in sentence])
 
-        for s in sentences:
-            print(sentences)
+                # store constituents of the sentence
+                sent_list = []
+                doc = self.nlp(sentence)
+
+                # analyze wach word in token
+                for token in doc:
+                    analyzed = {
+                        token.text: {
+                            "pos": token.pos_,
+                            "tag": token.tag_,
+                            "dep_parser": token.dep_,
+                        }
+                    }
+                    sent_list.append(analyzed)
+            analysis_list.append(sent_list)
+
+        print(analysis_list)
+        return analysis_list
 
 
 if __name__ == "__main__":
