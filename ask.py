@@ -1,6 +1,8 @@
 import spacy
 import sys
 
+from spacy.pipeline import Tagger
+
 
 class Ask:
     """
@@ -17,7 +19,8 @@ class Ask:
         # Load English tokenizer, tagger, parser, NER and word vectors
         self.nlp = spacy.load("en_core_web_sm")
 
-        print(self.tokenize())
+        # print(self.tokenize())
+        self.sentencize()
 
     def parse_file(self):
         """
@@ -53,6 +56,23 @@ class Ask:
             sentences = list(doc.sents)
             sentence_list.append(sentences)
 
+        for sentence in sentence_list:
+            for line in sentence:
+                line = " ".join([str(l) for l in line])
+
+                doc = self.nlp(line)
+                for token in doc:
+                    print(
+                        token.text,
+                        token.lemma_,
+                        token.pos_,
+                        token.tag_,
+                        token.dep_,
+                        token.shape_,
+                        token.is_alpha,
+                        token.is_stop,
+                    )
+
         return sentence_list
 
     def tokenize(self):
@@ -75,6 +95,20 @@ class Ask:
                 tokenized_sentence.append(tokens)
 
         return tokenized_sentence
+
+    def tag_words(self):
+        """
+        Run a part-of-speech tagger on tokens
+        :return: POS tagged words
+        """
+
+        sentences = self.sentencize()
+        tokens = self.tokenize()
+
+        tagged_words = []
+
+        for s in sentences:
+            print(sentences)
 
 
 if __name__ == "__main__":
