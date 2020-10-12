@@ -17,8 +17,8 @@ class Ask:
         # Load English tokenizer, tagger, parser, NER and word vectors
         self.nlp = spacy.load("en_core_web_sm")
 
-        content = self.parse_file()
-        print(content)
+        sentences = self.sentencize()
+        print(sentences)
 
     def parse_file(self):
         """
@@ -32,6 +32,27 @@ class Ask:
             file_content.append(line)
 
         return file_content
+
+    def sentencize(self):
+        """
+        Segment file in to “sentences”
+        :return: multidimensional list of sentences
+        """
+
+        sentence_list = []
+
+        content = self.parse_file()
+
+        # Construction via create_pipe
+        sentencizer = self.nlp.create_pipe("sentencizer")
+        self.nlp.add_pipe(sentencizer)
+
+        for c in content:
+            doc = self.nlp(c)
+            sentences = list(doc.sents)
+            sentence_list.append(sentences)
+
+        return sentence_list
 
 
 if __name__ == "__main__":
