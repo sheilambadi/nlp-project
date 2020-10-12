@@ -17,8 +17,7 @@ class Ask:
         # Load English tokenizer, tagger, parser, NER and word vectors
         self.nlp = spacy.load("en_core_web_sm")
 
-        sentences = self.sentencize()
-        print(sentences)
+        print(self.tokenize())
 
     def parse_file(self):
         """
@@ -29,7 +28,9 @@ class Ask:
 
         f = open(self.text_file, "r")
         for line in f:
-            file_content.append(line)
+            # ignore empty lines
+            if line.strip():
+                file_content.append(line)
 
         return file_content
 
@@ -53,6 +54,27 @@ class Ask:
             sentence_list.append(sentences)
 
         return sentence_list
+
+    def tokenize(self):
+        """
+        Tokenize each sentence into words
+        "return: tokenized list of sentences
+        """
+        sentences = self.sentencize()
+        tokenized_sentence = []
+
+        # Create a Tokenizer with the default settings for English
+        # including punctuation rules and exceptions
+        tokenizer = self.nlp.Defaults.create_tokenizer(self.nlp)
+
+        for paragraph in sentences:
+            # convert paragraph to string for tokenizer to work
+            paragraph = [str(p) for p in paragraph]
+            for sentence in tokenizer.pipe(paragraph):
+                tokens = list(sentence)
+                tokenized_sentence.append(tokens)
+
+        return tokenized_sentence
 
 
 if __name__ == "__main__":
